@@ -12,7 +12,7 @@ type RoundRobin struct {
 	currentIndex int64
 }
 
-func (r *RoundRobin) DoBanlance(instances []*Instance) (i *Instance, err error) {
+func (r *RoundRobin) DoBalance(instances []*Instance, key ...string) (i *Instance, err error) {
 	if len(instances) == 0 {
 		err = errors.New("Instances can't be null.")
 		return

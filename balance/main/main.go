@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"sync"
 	"time"
@@ -13,22 +12,27 @@ import (
 
 var wait sync.WaitGroup
 
-type GrantBalancer struct {
+type GrantBalance struct {
 }
 
-func (g *GrantBalancer) DoBanlance(instances []*balance.Instance) (i *balance.Instance, err error) {
+// DoBalance ...
+func (g *GrantBalance) DoBalance(instances []*balance.Instance, key ...string) (i *balance.Instance, err error) {
 	return instances[0], nil
 }
 
+func init() {
+	_ = balance.RegisterBalancer("grant", &GrantBalance{})
+}
+
 func main() {
-	var balancer = "random"
-	if len(os.Args) > 0 {
-		balancer = os.Args[1]
-	}
+	// var balancer = "random"
+	// if len(os.Args) > 0 {
+	// 	balancer = os.Args[1]
+	// }
 
-	balance.RegisterBalancer("grant", &GrantBalancer{})
+	// fmt.Printf("choose %s :\n", balancer)
 
-	fmt.Printf("choose %s :\n", balancer)
+	balancer := "hash"
 
 Label:
 	for {
@@ -50,7 +54,7 @@ Label:
 func ExecuteBalance(balancer balance.Balancer, instances []*balance.Instance, wait *sync.WaitGroup) {
 	// by round
 	for i := 0; i < 20; i++ {
-		i, err := balancer.DoBanlance(instances)
+		i, err := balancer.DoBalance(instances)
 		if err != nil {
 			log.Fatalln(err)
 			continue
